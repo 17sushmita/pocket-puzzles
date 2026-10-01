@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pocket Puzzles — Make a little headspace</title>
+<meta name="description" content="Play Lights Out, Sliding Tiles, Memory Match and Color Flood. A pocket-sized collection of puzzles for your next break.">
+<meta name="theme-color" content="#142821">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23142821'/%3E%3Cpath d='M14 14h16v16H14zm20 0h16v16H34zM14 34h16v16H14z' fill='%23d5f578'/%3E%3Ccircle cx='42' cy='42' r='8' fill='%23d5f578'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar"><a href="#" class="brand" aria-label="Pocket Puzzles home"><span class="brandmark" aria-hidden="true">▦</span>pocket puzzles<span class="brand-dot">.</span></a><span class="header-note">A little play. A clearer mind.</span><span class="edition">VOL. 01 / FOUR LITTLE GAMES</span></header>
+<main>
+<aside class="library"><div class="section-label">YOUR NEXT LITTLE OBSESSION</div><h1>Make a little<br>headspace.</h1><p class="intro">Pick a puzzle. Find your flow.<br>Stay for one more round.</p><nav id="games" aria-label="Choose a puzzle"></nav><div class="library-foot"><span class="tiny-grid" aria-hidden="true">✳</span><p>No rush. No countdown.<br>Just you and the next move.</p></div></aside>
+<section class="playroom" aria-label="Puzzle player">
+<div class="game-heading"><div><div class="section-label" id="eyebrow">01 / LOGIC</div><h2 id="game-title">Lights Out</h2></div><label class="difficulty"><span>Difficulty</span><select id="difficulty"><option value="easy">Easy</option><option value="tricky">Tricky</option></select></label></div>
+<p class="game-description" id="description"></p>
+<div class="playfield"><div class="scorebar"><span id="round-label">ROUND 01</span><div><span id="moves">0</span> <span id="move-unit">moves</span><span class="score-divider">/</span><span id="progress"></span></div></div><div id="board" class="board" aria-label="Puzzle board"></div><div id="palette" class="palette" aria-label="Choose a flood color" hidden></div><div id="status" class="status" role="status" aria-live="polite">Find your first move.</div></div>
+<div class="actions"><div><button id="undo" class="secondary">Undo</button><button id="restart" class="secondary">Restart</button><button id="hint" class="secondary">Hint</button></div><button id="new" class="primary">New puzzle <span aria-hidden="true">＋</span></button></div>
+<div class="bottom-note"><span id="record">Your next small win is waiting.</span><span id="save-note">Saved on this device</span></div>
+<details class="howto"><summary>How to play <span aria-hidden="true">＋</span></summary><p id="instructions"></p></details>
+</section>
+</main><footer><span>A GOOD WAY TO DO NOTHING ELSE.</span><span>Four classics. Endless fresh starts.</span></footer>
+<script src="app.js"></script>
+</body></html>
