@@ -1,0 +1,18 @@
+{
+  "name": "pocket-puzzles",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --experimental-sqlite scripts/dev.mjs",
+    "build": "vite build",
+    "test": "node --experimental-sqlite --test tests/*.test.mjs",
+    "db:generate": "drizzle-kit generate"
+  },
+  "devDependencies": {
+    "@openai/sites-vite-plugin": "0.2.0",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.44.5",
+    "linkedom": "^0.18.13",
+    "vite": "^8.0.0"
+  }
+}

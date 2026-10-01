@@ -1,0 +1,37 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import {parseHTML} from 'linkedom';
+import {localDatabase} from '../scripts/local-db.mjs';
+import {handleApi} from '../server/api.js';
+test('practice survives ranked play; ranked controls unlock and saved attempt resumes',async()=>{
+ const {document,window}=parseHTML(readFileSync(new URL('../client/index.html',import.meta.url),'utf8'));
+ // Linkedom does not implement the native select value setter.
+ Object.defineProperty(document.getElementById('difficulty'),'value',{value:'easy',writable:true});
+ const DB=localDatabase(),storage=new Map();
+ const localStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)};
+ const ctx=vm.createContext({document,window,console,localStorage,sessionStorage:{...localStorage,removeItem:k=>storage.delete(k)},setTimeout,clearTimeout,setInterval:()=>0,Intl,Date,fetch:async(path,opts={})=>handleApi(new Request('https://puzzles.test'+path,{...opts,headers:{...opts.headers,Origin:'https://puzzles.test','oai-authenticated-user-id':'test','oai-authenticated-user-email':'test@local.test'}}),{DB})});
+ vm.runInContext(readFileSync(new URL('../client/app.js',import.meta.url),'utf8'),ctx);
+ vm.runInContext(readFileSync(new URL('../client/ranked.js',import.meta.url),'utf8'),ctx);
+ const $=id=>document.getElementById(id);
+ $('board').querySelector('button').onclick();
+ const practice=storage.get('pocket-puzzles-v1');
+ await $('daily-mode').onclick();
+ assert.equal($('ranked-profile').hidden,false);
+ $('display-name').value='Test Player';await $('profile-form').onsubmit({preventDefault(){}});
+ assert.equal($('ranked-start').hidden,false);
+ await $('ranked-start').onclick();
+ assert.equal(document.querySelector('.playfield').hidden,false);
+ assert.equal($('board').querySelector('button').disabled,false);
+ await $('board').querySelector('button').onclick();
+ assert.equal($('moves').textContent,'1');assert.equal(storage.get('pocket-puzzles-v1'),practice);
+ await $('ranked-refresh').onclick();assert.equal($('moves').textContent,'1');
+ $('practice-mode').onclick();assert.equal($('moves').textContent,'1');assert.equal($('daily-panel').hidden,true);
+ await $('daily-mode').onclick();assert.equal($('moves').textContent,'1');
+ await window.ranked.selectGame('memory');await $('ranked-start').onclick();
+ assert.equal($('board').querySelector('button').disabled,false);
+ await $('board').querySelector('button').onclick();
+ assert.equal($('board').querySelectorAll('.revealed').length,1);
+ $('practice-mode').onclick();
+});
