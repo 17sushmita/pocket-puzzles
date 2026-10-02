@@ -6,6 +6,7 @@
  async function request(path,method='GET',input){const r=await fetch(path,{method,headers:input?{'Content-Type':'application/json','X-CSRF-Token':csrfToken}:{},...(input?{body:JSON.stringify(input)}:{})});let body;try{body=await r.json();}catch{throw new Error('The leaderboard is unavailable. Try again in a moment.');}if(body.csrfToken)csrfToken=body.csrfToken;if(!r.ok)throw new Error(body.error||'Please try again.');return body;}
  function updateState(a){attempt=a;clearTimeout(hideTimer);if(a){state={...a.state,history:[],solution:[],round:1};if(state.flipped.length===2){hideTimer=setTimeout(()=>{if(active&&attempt?.id===a.id){state.flipped=[];state.board=state.board.map((v,i)=>state.matched.includes(i)?v:null);render();}},Math.max(0,state.hideAt-(Date.now()+offset))+30);}}else state=fresh(current,difficulty);focusHint=-1;render();}
  function header(){
+  document.body.classList.toggle('ranked-playing',active&&!!attempt);
   $('daily-panel').hidden=!active;$('leaderboard').hidden=!active;
   $('practice-mode').setAttribute('aria-pressed',String(!active));$('daily-mode').setAttribute('aria-pressed',String(active));
   if(!active){field.hidden=false;actions.hidden=false;return;}
@@ -37,7 +38,7 @@
   catch(e){if(seq===sequence)error=e.message;}finally{if(seq===sequence){busy=false;header();leaderboard();}}
  }
  async function refreshBoard(){const seq=sequence;try{const d=await request('/api/daily?game='+current+'&difficulty='+difficulty);if(active&&seq===sequence){data=d;offset=d.serverNow-Date.now();updateState(d.attempt);leaderboard();header();}}catch(e){if(seq===sequence){error=e.message;header();}}}
- async function enter(){if(active)return;clearTimeout(timeout);timeout=null;if(state.flipped.length===2)state.flipped=[];save();active=true;difficulty=$('difficulty').value;await load();}
+ async function enter(){if(active)return;clearTimeout(timeout);timeout=null;if(state.flipped.length===2)state.flipped=[];save();active=true;difficulty=$('difficulty').value;setFocus(true);await load();}
  function practice(){sequence++;clearTimeout(hideTimer);active=false;busy=false;attempt=null;state=null;header();choose(current);}
  async function start(){if(busy)return;busy=true;error='';header();const seq=sequence;try{const r=await request('/api/start','POST',{game:current,difficulty});if(seq!==sequence||!active)return;offset=r.serverNow-Date.now();updateState(r.attempt);}catch(e){error=e.message;}finally{if(seq===sequence){busy=false;header();}}}
  async function move(index){if(busy||!attempt||attempt.state.won)return;const seq=sequence;busy=true;error='';header();try{const r=await request('/api/move','POST',{attemptId:attempt.id,revision:attempt.revision,index});if(seq!==sequence||!active)return;offset=r.serverNow-Date.now();updateState(r.attempt);if(r.attempt.state.won)await refreshBoard();}catch(e){if(seq===sequence){error=e.message;await refreshBoard();}}finally{if(seq===sequence){busy=false;render();header();}}}
